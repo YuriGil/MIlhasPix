@@ -7,14 +7,6 @@ import { fetchRanking } from "@/services/api";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { useRouter } from "next/navigation";
 
-/**
- * Multi-step Nova Oferta
- * - step 1: escolha do programa
- * - step 2: ofertar milhas (milhas ofertadas + valor por 1.000)
- * - step 3: dados do programa
- * - step 4: final (success)
- */
-
 type ProgramOption = { id: string; label: string; subtitle?: string };
 
 const PROGRAMS: ProgramOption[] = [
