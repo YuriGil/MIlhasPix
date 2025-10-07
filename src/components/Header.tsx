@@ -1,4 +1,3 @@
-// src/components/Header.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
@@ -41,7 +40,12 @@ export default function Header() {
         </div>
 
         <div>
-          <div className="balance-pill" aria-live="polite" aria-atomic="true">
+          <div
+            className="balance-pill"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={`Saldo atual ${displayBalance}`}
+          >
             <span style={{ opacity: 0.95 }}>{displayBalance}</span>
           </div>
         </div>
