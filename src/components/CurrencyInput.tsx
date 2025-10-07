@@ -1,3 +1,4 @@
+// src/components/CurrencyInput.tsx
 "use client";
 import React from "react";
 
@@ -7,24 +8,29 @@ type Props = {
   placeholder?: string;
 };
 
-/** Helpers */
 const onlyDigits = (s: string) => s.replace(/\D/g, "");
 const formatBRLFromDigits = (digits: string) => {
-  if (!digits) return "";
-  // ensure at least 3 digits so we always have cents
-  while (digits.length < 3) digits = "0" + digits;
-  const cents = digits.slice(-2);
-  const intPart = digits.slice(0, -2);
+  if (!digits) return "R$ 0,00";
+  let d = digits;
+  // ensure at least 3 chars so we always have cents
+  while (d.length < 3) d = "0" + d;
+  const cents = d.slice(-2);
+  const intPart = d.slice(0, -2) || "0";
   const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   return `R$ ${grouped},${cents}`;
 };
 
 export default function CurrencyInput({ value, onChange, placeholder }: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    const digits = onlyDigits(raw);
-    const formatted = formatBRLFromDigits(digits);
-    onChange(formatted);
+    const digits = onlyDigits(e.target.value);
+    onChange(formatBRLFromDigits(digits));
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const txt = e.clipboardData.getData("text/plain");
+    const digits = onlyDigits(txt);
+    e.preventDefault();
+    onChange(formatBRLFromDigits(digits));
   };
 
   return (
@@ -32,9 +38,12 @@ export default function CurrencyInput({ value, onChange, placeholder }: Props) {
       inputMode="numeric"
       value={value}
       onChange={handleChange}
+      onFocus={(e) => e.currentTarget.select()}
+      onPaste={handlePaste}
       placeholder={placeholder || "R$ 0,00"}
-      className="currency-input"
-      aria-label="Valor por milheiro"
+      className="currency-input input"
+      aria-label="Valor por 1.000 milhas"
+      autoComplete="off"
     />
   );
 }

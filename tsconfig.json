@@ -38,9 +38,19 @@
         "src/app/*"
       ],
       "@/api/*": [
-        "src/api/*"
+        "src//app/api/*"
       ]
-      
+      ,
+      "@/public/*": [
+        "src/app/public/*"
+      ]
+      ,
+      "@/images/*": [
+        "src/app/images/*"
+      ],
+      "@/context/*": [
+        "src/context*"
+      ]
     },
     "plugins": [
       {
