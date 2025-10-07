@@ -1,48 +1,71 @@
-import React from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import OfferItem from './OfferItem';
-import offerTableStyles from '../styles/OfferTable.styles';
+"use client";
+import React from "react";
+import { useRouter } from "next/navigation";
 
 type Offer = {
   id: string;
   program: string;
   subProgram?: string;
-  status: string;
-  login: string;
-  amount: string | number;
-  date: string;
-  logo?: any | null;
+  status?: string;
+  login?: string;
+  amount?: string | number;
+  date?: string;
 };
 
-export default function OfferTable({ offers }: { offers: Offer[] }) {
+export default function OfferTable({ offers = [] as Offer[] }) {
+  const router = useRouter();
   return (
-    <View style={offerTableStyles.offersPanel}>
-      <View style={offerTableStyles.panelTop}>
-        <Text style={offerTableStyles.panelTitle}>Todas ofertas</Text>
-        <View style={offerTableStyles.panelControls}>
-          <TextInput style={[offerTableStyles.input, { borderRadius: 999, paddingHorizontal: 16, width: 280 }]} placeholder="Login de acesso, ID da oferta..." />
-          <TouchableOpacity style={offerTableStyles.roundBtn}><Text>Filtros ▾</Text></TouchableOpacity>
-        </View>
-      </View>
+    <div className="offers-panel">
+      <div className="offers-header">
+        <div className="title">Todas ofertas</div>
+        <div className="controls">
+          <input className="search-input" placeholder="Login de acesso, ID da oferta..." />
+          <button className="filter-btn">Filtros ▾</button>
+        </div>
+      </div>
 
-      <ScrollView horizontal>
-        <View style={{ minWidth: 820 }}>
-          <View style={offerTableStyles.tableHeader}>
-            <Text style={offerTableStyles.th}>Programa</Text>
-            <Text style={offerTableStyles.th}>Status</Text>
-            <Text style={offerTableStyles.th}>ID da oferta</Text>
-            <Text style={offerTableStyles.th}>Login</Text>
-            <Text style={offerTableStyles.th}>Milhas ofertadas</Text>
-            <Text style={offerTableStyles.th}>Data</Text>
-          </View>
-
-          <View>
+      <div className="table-wrap">
+        <table className="offers-table">
+          <thead>
+            <tr>
+              <th>Programa</th>
+              <th>Status</th>
+              <th>ID da oferta</th>
+              <th>Login</th>
+              <th>Milhas ofertadas</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody>
             {offers.map((o) => (
-              <OfferItem key={o.id} item={o} />
+              <tr key={o.id}>
+                <td>
+                  <div className="program-cell">
+                    <div className="program-logo" />
+                    <div className="program-info">
+                      <div className="prog-name">{o.program}</div>
+                      <div className="prog-sub">{o.subProgram}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span className={`chip ${o.status?.toLowerCase().includes("ativa") ? "chip--green" : "chip--blue"}`}>
+                    {o.status}
+                  </span>
+                </td>
+                <td>{o.id}</td>
+                <td>{o.login}</td>
+                <td>{o.amount}</td>
+                <td>{o.date}</td>
+              </tr>
             ))}
-          </View>
-        </View>
-      </ScrollView>
-    </View>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="table-actions">
+        <button className="btn-primary" onClick={() => router.push("/nova-oferta")}>+ Nova oferta</button>
+      </div>
+    </div>
   );
 }
