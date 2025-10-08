@@ -1,53 +1,35 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { useBalance } from "../context/BalanceContext";
+import Link from "next/link";
+import { useContext } from "react";
+import { BalanceContext } from "../context/BalanceContext";
 
 export default function Header() {
-  const path = usePathname();
-  const { formattedBalance } = useBalance();
-  const [displayBalance, setDisplayBalance] = useState<string>(formattedBalance);
-
-  useEffect(() => {
-    setDisplayBalance(formattedBalance);
-  }, [formattedBalance]);
-
-  useEffect(() => {
-    const handle = (e: StorageEvent) => {
-      if (e.key === "milhaspix_balance") {
-        const v = Number(e.newValue);
-        if (!Number.isNaN(v)) {
-          setDisplayBalance(
-            new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v)
-          );
-        }
-      }
-    };
-    window.addEventListener("storage", handle);
-    return () => window.removeEventListener("storage", handle);
-  }, []);
-
-  const pageTitle =
-    path === "/nova-oferta" ? "Nova Oferta" : path === "/minhas-ofertas" ? "Minhas Ofertas" : "";
+  const { balance } = useContext(BalanceContext);
 
   return (
-    <header className="header-bar">
-      <div className="header-inner">
-        <div className="flex items-center gap-3">
-          <Image src="/images/logo.png" alt="MilhasPix" width={160} height={40} className="logo" priority />
-          {pageTitle ? <span className="header-title hidden sm:inline">{pageTitle}</span> : null}
-        </div>
+    <header className="bg-[#1E90FF]">
+      <div className="max-w-[1216px] mx-auto px-4 py-3 flex items-center justify-between">
+        <Link href="/">
+          <Image
+            src="/images/logo.png"
+            alt="MilhasPix"
+            width={140}
+            height={36}
+            priority
+            className="object-contain"
+          />
+        </Link>
 
-        <div>
-          <div
-            className="balance-pill"
-            aria-live="polite"
-            aria-atomic="true"
-            aria-label={`Saldo atual ${displayBalance}`}
-          >
-            <span style={{ opacity: 0.95 }}>{displayBalance}</span>
-          </div>
+        <div className="inline-flex items-center px-4 py-2 rounded-full border border-[#CAE6FB] bg-[#1E90FF]/10">
+          <span className="text-white font-medium text-sm">
+            R${" "}
+            {balance.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
         </div>
       </div>
     </header>

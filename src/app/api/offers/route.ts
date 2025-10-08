@@ -1,50 +1,64 @@
-// src/app/api/offers/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
-type Offer = {
-  id: string;
-  program: string;
-  subProgram?: string;
-  status?: string;
-  login?: string;
-  amount?: string | number;
-  date?: string;
-  meta?: any;
-};
-
-let INTERNAL_OFFERS: Offer[] = []; // atenção: persistência em memória (ephemeral)
-
-function nowId() {
-  return `LOCAL-${Date.now()}`;
-}
+const API_BASE = "https://api.milhaspix.com";
 
 export async function GET(req: NextRequest) {
   try {
-    return NextResponse.json(INTERNAL_OFFERS, { status: 200 });
-  } catch (err: any) {
-    return NextResponse.json({ error: String(err?.message || err) }, { status: 500 });
+    const { searchParams } = new URL(req.url);
+    const endpoint = searchParams.get("endpoint");
+    const query = searchParams.get("query") || "";
+
+    if (!endpoint) {
+      console.warn("❌ Nenhum endpoint fornecido");
+      return NextResponse.json({ error: "Missing endpoint" }, { status: 400 });
+    }
+
+    const target = `${API_BASE}/${endpoint}${query ? `?${query}` : ""}`;
+    console.log("🌐 Buscando dados da API:", target);
+
+    const res = await fetch(target, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+
+    console.log("📡 Resposta da API:", res.status);
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("🚨 Erro da API:", text);
+      return NextResponse.json(
+        { error: `Erro da API MilhasPix (${res.status})`, body: text },
+        { status: res.status }
+      );
+    }
+
+    const data = await res.json();
+
+    return new NextResponse(JSON.stringify(data), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
+  } catch (error: any) {
+    console.error("💥 Erro interno no proxy:", error);
+    return NextResponse.json({ error: String(error.message || error) }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json().catch(() => ({}));
-    const id = nowId();
-    const date = new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
-    const offer: Offer = {
-      id,
-      program: body.program ?? "Smiles",
-      subProgram: body.subProgram ?? "Comum",
-      status: body.status ?? "Ativa",
-      login: body.login ?? "user@example.com",
-      amount: body.amount ?? body.miles ?? "10.000",
-      date,
-      meta: body.meta ?? {},
-    };
-    // insere no topo
-    INTERNAL_OFFERS.unshift(offer);
-    return NextResponse.json(offer, { status: 201 });
-  } catch (err: any) {
-    return NextResponse.json({ error: String(err?.message || err) }, { status: 500 });
-  }
+export async function OPTIONS() {
+  return NextResponse.json(
+    { ok: true },
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    }
+  );
 }

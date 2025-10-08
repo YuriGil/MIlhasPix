@@ -19,39 +19,19 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@/components/*": [
-        "src/components/*"
-      ],
-      "@/services/*": [
-        "src/services/*"
-      ],
-      "@/hook/*": [
-        "src/hook/*"
-      ],
-      "@/styles/*": [
-        "src/styles/*"
-      ],
-      "@/app/*": [
-        "src/app/*"
-      ],
-      "@/api/*": [
-        "src//app/api/*"
-      ]
-      ,
-      "@/public/*": [
-        "src/app/public/*"
-      ]
-      ,
-      "@/images/*": [
-        "src/app/images/*"
-      ],
-      "@/context/*": [
-        "src/context*"
-      ]
-    },
+  "@/*": ["./*"],
+  "@/components/*": ["src/components/*"],
+  "@/services/*": ["src/services/*"],
+  "@/hook/*": ["src/hook/*"],
+  "@/styles/*": ["src/styles/*"],
+  "@/app/*": ["src/app/*"],
+  "@/api/*": ["src/app/api/*"],
+  "@/public/*": ["src/app/public/*"],
+  "@/images/*": ["src/app/images/*"],
+  "@/context/*": ["src/context/*"],
+  "@/utils/*": ["src/utils/*"]
+}
+,
     "plugins": [
       {
         "name": "next"

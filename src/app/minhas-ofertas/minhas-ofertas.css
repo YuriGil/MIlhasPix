@@ -1,0 +1,51 @@
+/* ============================================================
+   MINHAS-OFERTAS.CSS — Layout pixel-perfect baseado no Figma
+   ============================================================ */
+
+.minhas-ofertas-container {
+  @apply max-w-5xl mx-auto mt-12 bg-white rounded-2xl shadow-md border border-gray-100 p-6 sm:p-8;
+}
+
+.minhas-ofertas-title {
+  @apply text-2xl font-semibold text-[#1E293B] mb-6 text-center;
+}
+
+.table-container {
+  @apply overflow-x-auto;
+}
+
+.minhas-ofertas-table {
+  @apply w-full border-collapse text-sm text-gray-700;
+}
+
+.minhas-ofertas-table th {
+  @apply bg-[#F8FAFF] text-gray-600 font-medium py-3 px-4 text-left;
+}
+
+.minhas-ofertas-table td {
+  @apply border-t border-gray-200 py-3 px-4;
+}
+
+.status-badge {
+  @apply px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.status-ativa {
+  @apply bg-green-100 text-green-700;
+}
+
+.status-utilizacao {
+  @apply bg-blue-100 text-blue-700;
+}
+
+.status-inativa {
+  @apply bg-gray-100 text-gray-500;
+}
+
+.btn-editar {
+  @apply text-[#007BFF] font-medium hover:underline;
+}
+
+.btn-excluir {
+  @apply text-red-500 font-medium hover:underline;
+}
