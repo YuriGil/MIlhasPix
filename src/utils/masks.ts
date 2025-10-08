@@ -1,4 +1,3 @@
-// src/utils/masks.ts
 export function maskCPF(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 11);
   return digits
@@ -8,10 +7,8 @@ export function maskCPF(value: string) {
 }
 
 export function maskPhone(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 13); // +55 + 11 + 9xxxx...
-  // Accepts inputs like 5511999999999 or 11999999999
+  const digits = value.replace(/\D/g, "").slice(0, 13); 
   if (digits.startsWith("55")) {
-    // +55 (11) 91234-5678 or +55 (11) 1234-5678
     const rest = digits.slice(2);
     if (rest.length <= 2) return `+55 (${rest}`;
     if (rest.length <= 7) return `+55 (${rest.slice(0, 2)}) ${rest.slice(2)}`;

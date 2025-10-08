@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
 
     const data = await res.json().catch(() => ({}));
 
-    // ✅ Retorna sempre com CORS liberado
     return new NextResponse(JSON.stringify(data), {
       status: res.status,
       headers: {

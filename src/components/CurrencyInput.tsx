@@ -1,4 +1,3 @@
-// src/components/CurrencyInput.tsx
 "use client";
 import React from "react";
 
@@ -12,7 +11,7 @@ const onlyDigits = (s: string) => s.replace(/\D/g, "");
 const formatBRLFromDigits = (digits: string) => {
   if (!digits) return "R$ 0,00";
   let d = digits;
-  // ensure at least 3 chars so we always have cents
+
   while (d.length < 3) d = "0" + d;
   const cents = d.slice(-2);
   const intPart = d.slice(0, -2) || "0";

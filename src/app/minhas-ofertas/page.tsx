@@ -2,8 +2,11 @@
 
 import { useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import Header from "../../components/Header";
+import { useToast } from "@/components/ToastProvider";
 import { Filter } from "lucide-react";
+import { fetchOffersList } from "@/services/api"; 
 
 type OfferItem = {
   offerId: string;
@@ -17,12 +20,15 @@ type OfferItem = {
 };
 
 export default function MinhasOfertasPage() {
+  const router = useRouter();
+  const toast = useToast();
+  const pathname = usePathname();
+
   const [raw, setRaw] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filtros
   const [filterOpen, setFilterOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [programFilter, setProgramFilter] = useState("");
@@ -31,43 +37,46 @@ export default function MinhasOfertasPage() {
 
   const filterRef = useRef<HTMLDivElement>(null);
 
-  // --- Fecha o dropdown ao clicar fora ---
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-        setFilterOpen(false);
-      }
+  function isPreviewMode() {
+    if (typeof window === "undefined") return false;
+    try {
+      return new URLSearchParams(window.location.search).get("preview") === "true";
+    } catch {
+      return false;
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }
+
+  useEffect(() => {
+    const user = typeof window !== "undefined" ? localStorage.getItem("authUser") : null;
+    if (!user && !isPreviewMode()) {
+      toast.push({ type: "error", title: "Faça login para acessar suas ofertas" });
+      router.push("/login");
+    }
   }, []);
 
-  // --- Busca ofertas ---
   useEffect(() => {
+    let mounted = true;
     async function load() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/offers?endpoint=simulate-offers-list", { cache: "no-store" });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error || `Erro ${res.status}`);
-        const list = Array.isArray(data.offers)
-          ? data.offers
-          : Array.isArray(data)
-          ? data
-          : [];
-        setRaw(list);
+        const list = await fetchOffersList();
+        if (!mounted) return;
+        setRaw(Array.isArray(list) ? list : []);
       } catch (err: any) {
-        console.error("Erro ao buscar ofertas:", err);
-        setError(err.message || "Erro desconhecido");
+        console.error("Erro fetchOffersList:", err);
+        if (!mounted) return;
+        setError(String(err?.message ?? err) || "Erro ao carregar ofertas");
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     }
     load();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  // --- Normaliza dados ---
   function normalize(item: any): OfferItem {
     const offerId = item.offerId ?? item.id ?? "—";
     const offerStatus = item.offerStatus ?? item.status ?? "—";
@@ -105,7 +114,6 @@ export default function MinhasOfertasPage() {
 
   const offers = useMemo(() => raw.map(normalize), [raw]);
 
-  // --- Aplica filtros ---
   const filtered = useMemo(() => {
     const term = searchTerm.toLowerCase();
     return offers.filter((o) => {
@@ -125,7 +133,6 @@ export default function MinhasOfertasPage() {
     });
   }, [offers, searchTerm, statusFilter, programFilter, dateFrom, dateTo]);
 
-  // --- Render ---
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header />
@@ -145,7 +152,6 @@ export default function MinhasOfertasPage() {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-4">
             <h2 className="text-gray-600 font-medium w-full sm:w-auto">Todas ofertas</h2>
 
-            {/* Busca + Filtros */}
             <div className="flex gap-2 w-full sm:w-auto relative" ref={filterRef}>
               <div className="relative flex-1">
                 <input
@@ -243,12 +249,12 @@ export default function MinhasOfertasPage() {
                       </button>
                     </div>
                   </div>
+                  
                 )}
               </div>
             </div>
           </div>
 
-          {/* Tabela */}
           {loading ? (
             <div className="py-8 text-center text-gray-500">Carregando...</div>
           ) : error ? (
@@ -289,16 +295,15 @@ export default function MinhasOfertasPage() {
                       </td>
                       <td className="py-3 px-4">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            String(o.offerStatus)
-                              .toLowerCase()
-                              .includes("ativa")
-                              ? "bg-green-100 text-green-700"
-                              : String(o.offerStatus)
-                                  .toLowerCase()
-                                  .includes("util")
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-gray-100 text-gray-600"
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${String(o.offerStatus)
+                            .toLowerCase()
+                            .includes("ativa")
+                            ? "bg-green-100 text-green-700"
+                            : String(o.offerStatus)
+                                .toLowerCase()
+                                .includes("util")
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-gray-100 text-gray-600"
                           }`}
                         >
                           {o.offerStatus}
@@ -307,9 +312,7 @@ export default function MinhasOfertasPage() {
                       <td className="py-3 px-4 text-gray-700">{o.offerId}</td>
                       <td className="py-3 px-4 text-gray-700">{o.accountLogin}</td>
                       <td className="py-3 px-4 text-gray-700">
-                        {o.mileAmount
-                          ? Number(o.mileAmount).toLocaleString("pt-BR")
-                          : "—"}
+                        {o.mileAmount ? Number(o.mileAmount).toLocaleString("pt-BR") : "—"}
                       </td>
                       <td className="py-3 px-4 text-gray-700">
                         {o.createdAt

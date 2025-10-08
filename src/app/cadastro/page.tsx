@@ -1,0 +1,125 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Lock, Mail, User } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
+
+export default function CadastroPage() {
+  const router = useRouter();
+  const toast = useToast();
+
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmaSenha, setConfirmaSenha] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function validateEmail(value: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  async function handleRegister(e: React.FormEvent) {
+    e.preventDefault();
+    if (!nome.trim()) {
+      toast.push({ type: "error", title: "Informe seu nome completo" });
+      return;
+    }
+    if (!validateEmail(email)) {
+      toast.push({ type: "error", title: "E-mail inválido" });
+      return;
+    }
+    if (senha.length < 6) {
+      toast.push({ type: "error", title: "A senha deve ter ao menos 6 caracteres" });
+      return;
+    }
+    if (senha !== confirmaSenha) {
+      toast.push({ type: "error", title: "As senhas não coincidem" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await new Promise((r) => setTimeout(r, 1000));
+      localStorage.setItem("authUser", JSON.stringify({ nome, email }));
+      toast.push({ type: "success", title: "Cadastro realizado com sucesso!" });
+      router.push("/nova-oferta");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
+      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
+        <h1 className="text-2xl font-semibold text-center text-[#1E90FF] mb-6">Criar Conta</h1>
+
+        <form onSubmit={handleRegister} className="space-y-5">
+          <div className="relative">
+            <User className="absolute left-3 top-3 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Nome completo"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#1E90FF]/30 text-sm"
+              required
+            />
+          </div>
+
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
+            <input
+              type="email"
+              placeholder="E-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#1E90FF]/30 text-sm"
+              required
+            />
+          </div>
+
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
+            <input
+              type="password"
+              placeholder="Senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#1E90FF]/30 text-sm"
+              required
+            />
+          </div>
+
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
+            <input
+              type="password"
+              placeholder="Confirmar senha"
+              value={confirmaSenha}
+              onChange={(e) => setConfirmaSenha(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#1E90FF]/30 text-sm"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#1E90FF] text-white rounded-full py-2 font-medium hover:bg-[#1878d8] transition disabled:opacity-60"
+          >
+            {loading ? "Cadastrando..." : "Cadastrar"}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-600 mt-6">
+          Já possui conta?{" "}
+          <Link href="/login" className="text-[#1E90FF] hover:underline">
+            Fazer login
+          </Link>
+        </p>
+      </div>
+    </main>
+  );
+}

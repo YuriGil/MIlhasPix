@@ -12,7 +12,7 @@ export default function Home() {
       <Header />
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-12 bg-[#c8dff1] relative overflow-hidden">
-        {/* Logo centralizada */}
+      
         <div className="flex flex-col items-center justify-start mt-8 sm:mt-1 mb-32 sm:mb-40 z-0">
           <img
             src="/images/logo.png"
@@ -21,7 +21,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Conteúdo principal */}
+       
         <div className="text-center max-w-2xl relative z-10">
           <h1 className="text-2xl sm:text-3xl font-semibold text-[#2E3D50] mb-4">
             Bem-vindo ao MilhasPix
@@ -47,9 +47,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* === BOTÃO FLUTUANTE E MENU === */}
         <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 flex flex-col items-end gap-3">
-          {/* Menu suspenso */}
+     
           <div
             className={`flex flex-col items-end gap-2 transition-all duration-300 ${
               menuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none"
@@ -65,7 +64,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Botão principal */}
           <button
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}

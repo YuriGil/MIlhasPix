@@ -9,12 +9,12 @@ export async function GET(req: NextRequest) {
     const query = searchParams.get("query") || "";
 
     if (!endpoint) {
-      console.warn("❌ Nenhum endpoint fornecido");
+      console.warn("Nenhum endpoint fornecido");
       return NextResponse.json({ error: "Missing endpoint" }, { status: 400 });
     }
 
     const target = `${API_BASE}/${endpoint}${query ? `?${query}` : ""}`;
-    console.log("🌐 Buscando dados da API:", target);
+    console.log("Buscando dados da API:", target);
 
     const res = await fetch(target, {
       method: "GET",
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 
     if (!res.ok) {
       const text = await res.text();
-      console.error("🚨 Erro da API:", text);
+      console.error("Erro da API:", text);
       return NextResponse.json(
         { error: `Erro da API MilhasPix (${res.status})`, body: text },
         { status: res.status }
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("💥 Erro interno no proxy:", error);
+    console.error("Erro interno no proxy:", error);
     return NextResponse.json({ error: String(error.message || error) }, { status: 500 });
   }
 }

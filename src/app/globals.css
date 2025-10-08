@@ -1,12 +1,9 @@
-/* ============================================================
-   GLOBALS.CSS — Configuração base do Tailwind + estilos globais
-   ============================================================ */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* RESET GLOBAL */
+
 html,
 body {
   margin: 0;
@@ -16,7 +13,6 @@ body {
   color: #1E293B;
 }
 
-/* HEADER FIXO */
 header {
   position: fixed;
   top: 0;
@@ -28,12 +24,11 @@ header {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* CONTEÚDO PRINCIPAL */
 main {
-  padding-top: 80px; /* altura do header */
+  padding-top: 80px; 
 }
 
-/* SCROLLBAR PERSONALIZADA */
+
 ::-webkit-scrollbar {
   width: 6px;
 }

@@ -15,14 +15,40 @@ export const BalanceContext = createContext<BalanceContextType>({
 export function BalanceProvider({ children }: { children: ReactNode }) {
   const [balance, setBalance] = useState<number>(0);
 
-  // Simula busca de saldo (pode substituir por fetch real)
   useEffect(() => {
-    const fetchBalance = async () => {
-      // exemplo: const res = await fetch("/api/balance");
-      // const data = await res.json();
-      // setBalance(data.balance);
-      setBalance(283.12); // valor inicial
-    };
+    async function fetchBalance() {
+      try {
+        const ls = typeof window !== "undefined" ? localStorage.getItem("userBalance") : null;
+        if (ls) {
+          const n = Number(ls);
+          if (!Number.isNaN(n)) {
+            setBalance(n);
+            return;
+          }
+        }
+
+        const res = await fetch("/api/offers");
+        if (!res.ok) {
+          setBalance(0);
+          return;
+        }
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          let sum = 0;
+          for (const it of data) {
+            const v = Number(it.value ?? it.amount ?? it.balance ?? 0);
+            if (!Number.isNaN(v)) sum += Number(v);
+          }
+          setBalance(Number(sum));
+          return;
+        }
+
+        setBalance(0);
+      } catch (err) {
+        console.error("BalanceProvider fetch error:", err);
+        setBalance(0);
+      }
+    }
     fetchBalance();
   }, []);
 
