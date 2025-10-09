@@ -2,18 +2,29 @@
 
 import { usePathname } from "next/navigation";
 import Header from "./Header";
-import HomeButton from "./HomeButton"; 
+import HomeButton from "./HomeButton";
 
-export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
+export default function LayoutWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
-  const noHeaderRoutes = ["/nova-oferta", "/cadastro", "/login", "/minhas-ofertas"];
-  const shouldShowHeader = !noHeaderRoutes.some((path) => pathname.startsWith(path));
+  const noHeaderRoutes = [
+    "/nova-oferta",
+    "/cadastro",
+    "/login",
+    "/minhas-ofertas",
+  ];
+  const shouldShowHeader = !noHeaderRoutes.some((path) =>
+    pathname.startsWith(path)
+  );
 
   return (
-    <>
+    <div className={!shouldShowHeader ? "no-header" : ""}>
+      <HomeButton position="right" />
       {shouldShowHeader && <Header />}
-      <HomeButton position="right" /> 
       {children}
-    </>
+    </div>
   );
 }

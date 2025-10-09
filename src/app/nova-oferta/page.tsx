@@ -224,7 +224,7 @@ export default function NovasOfertasPage() {
       <Header />
 
       <main className="max-w-[1216px] mx-auto px-4 sm:px-6 md:px-12 flex flex-col md:flex-row gap-10">
-        <aside className="w-full md:w-[260px] relative mb-6 md:mb-0">
+        <aside className="w-full md:w-[260px] relative mb-0 md:mb-0">
           <button
             onClick={() => router.push("/minhas-ofertas")}
             className="w-full mb-4 bg-[#1E90FF] text-white py-2 rounded-full text-sm font-medium hover:bg-[#1878d8] transition"
@@ -296,46 +296,129 @@ export default function NovasOfertasPage() {
   );
 }
 
-function StepSidebar({ currentStep, setStep }: any) {
+function StepSidebar({ currentStep }: any) {
   const steps = [
     { id: 1, title: "Escolha a companhia aérea" },
     { id: 2, title: "Oferte suas milhas" },
     { id: 3, title: "Insira os dados do programa" },
     { id: 4, title: "Pedido finalizado" },
   ];
+
   return (
-    <div className="flex flex-row md:flex-col gap-3 md:gap-6 justify-between bg-transparent md:bg-white">
-      {steps.map((s, idx) => {
-        const active = currentStep === s.id;
-        const completed = currentStep > s.id;
-        const isLast = idx === steps.length - 1;
-        return (
-          <button
-            key={s.id}
-            disabled={s.id > currentStep}
-            onClick={() => s.id <= currentStep && setStep(s.id)}
-            className="w-full md:w-auto text-left flex items-center md:items-start gap-3 md:gap-4 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <div className="flex flex-col items-center">
+    <div className="w-full flex flex-col items-center md:items-start">
+      {/* --- MOBILE (horizontal grid) --- */}
+      <div className="grid grid-cols-4 md:hidden w-full max-w-[380px] mx-auto gap-1">
+        {steps.map((s) => {
+          const active = currentStep === s.id;
+          const completed = currentStep > s.id;
+          return (
+            <div key={s.id} className="flex flex-col items-center">
               <div
-                className={`relative z-20 w-7 h-7 rounded-full flex items-center justify-center transition-all ${completed ? "bg-[#1E90FF] border-2 border-[#1E90FF]" : active ? "bg-white border-2 border-[#1E90FF]" : "bg-white border border-gray-300"
-                  }`}
+                className={`w-5 h-5 rounded-full flex items-center justify-center border-2 transition-all ${
+                  completed
+                    ? "bg-[#1E90FF] border-[#1E90FF]"
+                    : active
+                    ? "border-[#1E90FF] bg-white"
+                    : "border-gray-300 bg-white"
+                }`}
               >
                 <div
-                  className={`rounded-full transition-all ${completed ? "w-3 h-3 bg-white" : active ? "w-3 h-3 bg-[#1E90FF]" : "w-2 h-2 bg-transparent"}`}
+                  className={`rounded-full ${
+                    completed
+                      ? "bg-white w-2 h-2"
+                      : active
+                      ? "bg-[#1E90FF] w-2 h-2"
+                      : "bg-transparent w-1.5 h-1.5"
+                  }`}
                 />
               </div>
-              {!isLast && (
-                <div className={`hidden md:block w-[2px] mt-1 h-8 ${completed ? "bg-[#1E90FF]" : "bg-gray-200"} transition-colors`} />
-              )}
+              <span
+                className={`text-[10px] font-semibold ${
+                  active ? "text-[#1E90FF]" : "text-gray-600"
+                }`}
+              >
+                Passo {s.id}
+              </span>
+              <span
+                className={`text-[9px] text-center ${
+                  active ? "text-[#1E90FF]" : "text-gray-500"
+                }`}
+              >
+                {s.title.length > 18 ? s.title.slice(0, 18) + "..." : s.title}
+              </span>
             </div>
-            <div className="text-left">
-              <div className={`text-sm font-semibold ${active || completed ? "text-[#1E90FF]" : "text-gray-400"}`}>Passo {s.id}</div>
-              <div className={`text-xs md:text-sm ${active ? "text-[#0F1724]" : completed ? "text-gray-700" : "text-gray-400"}`}>{s.title}</div>
-            </div>
-          </button>
-        );
-      })}
+          );
+        })}
+      </div>
+
+      {/* --- Barra de progresso (mobile) --- */}
+      <div className="w-full h-[2px] bg-gray-200 mt-2 md:hidden rounded-full overflow-hidden">
+        <div
+          className="h-full bg-[#1E90FF] transition-all duration-300"
+          style={{ width: `${(currentStep / steps.length) * 100}%` }}
+        />
+      </div>
+
+      {/* --- DESKTOP (vertical sidebar) --- */}
+      <div className="hidden md:flex flex-col gap-6 rg-10 mt-2 ml-1">
+        {steps.map((s, idx) => {
+          const active = currentStep === s.id;
+  const completed = currentStep > s.id;
+  const isLast = idx === steps.length - 1;
+
+  return (
+    <div key={s.id} className="flex items-start gap-3">
+      {/* Bolinha + linha */}
+      <div className="flex flex-col items-center relative">
+        <div
+          className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all ${
+            completed
+              ? "bg-[#1E90FF] border-[#1E90FF]"
+              : active
+              ? "border-[#1E90FF] bg-white"
+              : "border-gray-300 bg-white"
+          }`}
+        >
+          <div
+            className={`rounded-full ${
+              completed
+                ? "bg-white w-2.5 h-2.5"
+                : active
+                ? "bg-[#1E90FF] w-2.5 h-2.5"
+                : "bg-transparent w-2 h-2"
+            }`}
+          />
+        </div>
+        {!isLast && (
+          <div
+            className={`w-[2px] h-24 mb-[-50px]  ${
+              completed ? "bg-[#1E90FF]" : "bg-gray-200"
+            }`}
+          />
+        )}
+      </div>
+
+      {/* Texto */}
+      <div className="flex flex-col">
+        <span
+          className={`text-sm font-semibold ${
+            active ? "text-[#1E90FF]" : "text-gray-600"
+          }`}
+        >
+          Passo {s.id}
+        </span>
+        <span
+          className={`text-xs ${
+            active ? "text-[#1E90FF]" : "text-gray-500"
+          }`}
+        >
+          {s.title}
+        </span>
+      </div>
+    </div>
+  );
+})}
+      </div>
     </div>
   );
 }
@@ -393,6 +476,7 @@ function Step1({ program, setProgram, product, setProduct, onNext }: any) {
     </motion.div>
   );
 }
+
 function Step2(props: any) {
   const {
     miles,
@@ -441,29 +525,38 @@ function Step2(props: any) {
         <div className="grid sm:grid-cols-2 gap-6 mb-6">
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-2">Milhas ofertadas</label>
-            <div className="absolute left-3 inset-y-0 flex items-center pointer-events-none text-gray-400">
+
+            {/* ICON: aligned vertically using top-1/2 -translate-y-1/2 */}
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
               <Plane size={18} />
             </div>
+
+            {/* INPUT: increased vertical padding and focus:border for visual harmony */}
             <input
               value={miles}
               onChange={(e) => setMiles(e.target.value)}
               placeholder="Ex: 10.000"
-              className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 text-sm focus:ring-2 focus:ring-[#1E90FF]/30"
+              className="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:ring-2 focus:ring-[#1E90FF]/30 focus:border-[#1E90FF] transition"
             />
           </div>
 
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-2">Valor a cada 1.000 milhas</label>
-            <div className="absolute left-3 inset-y-0 flex items-center pointer-events-none text-gray-400">
+
+            {/* ICON: aligned vertically using top-1/2 -translate-y-1/2 */}
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
               <DollarSign size={18} />
             </div>
+
             <input
               value={valuePer1000}
               onChange={(e) => setValuePer1000(e.target.value)}
               placeholder="R$ 0,00"
-              className={`w-full border rounded-lg pl-10 pr-3 py-2 text-sm focus:ring-2 focus:ring-[#1E90FF]/30 ${outOfRange ? "border-red-400" : "border-gray-300"}`}
+              className={`w-full border rounded-lg pl-10 pr-3 py-2.5 text-sm focus:ring-2 focus:ring-[#1E90FF]/30 focus:border-[#1E90FF] transition ${outOfRange ? "border-red-400" : "border-gray-300"}`}
             />
-            <p className={`text-xs mt-1 ${outOfRange ? "text-red-500" : "text-gray-500"}`}>Escolha entre R$ {minRecommended.toFixed(2).replace(".", ",")} e R$ {maxRecommended.toFixed(2).replace(".", ",")}</p>
+            <p className={`text-xs mt-1 ${outOfRange ? "text-red-500" : "text-gray-500"}`}>
+              Escolha entre R$ {minRecommended.toFixed(2).replace(".", ",")} e R$ {maxRecommended.toFixed(2).replace(".", ",")}
+            </p>
           </div>
         </div>
 
@@ -476,7 +569,12 @@ function Step2(props: any) {
 
         {averageMode && (
           <div className="mb-6">
-            <input value={averagePerPassenger} onChange={(e) => setAveragePerPassenger(e.target.value)} placeholder="Ex: 27.800" className="w-full md:w-40 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#1E90FF]/30" />
+            <input
+              value={averagePerPassenger}
+              onChange={(e) => setAveragePerPassenger(e.target.value)}
+              placeholder="Ex: 27.800"
+              className="w-full md:w-40 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#1E90FF]/30 focus:border-[#1E90FF] transition"
+            />
           </div>
         )}
 
@@ -487,20 +585,22 @@ function Step2(props: any) {
           </span>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6">
-          <button onClick={onBack} className="w-full sm:w-auto flex items-center gap-2 border border-[#1E90FF] text-[#1E90FF] px-6 py-2 rounded-full hover:bg-[#E6F2FF]">
-            <ArrowLeft size={16}/> Voltar
+        {/* BUTTONS: added top border and padding to give visual separation from content */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6 border-t border-gray-100 pt-6">
+          <button onClick={onBack} className="w-full sm:w-auto flex items-center gap-2 border border-[#1E90FF] text-[#1E90FF] px-6 py-2 rounded-full hover:bg-[#E6F2FF] transition">
+            <ArrowLeft size={16} /> Voltar
           </button>
 
-          <button onClick={onNext} className="w-full sm:w-auto bg-[#1E90FF] text-white px-6 py-2 rounded-full hover:bg-[#1878d8] flex items-center gap-2 justify-center">
+          <button onClick={onNext} className="w-full sm:w-auto bg-[#1E90FF] text-white px-6 py-2.5 rounded-full hover:bg-[#1878d8] flex items-center gap-2 justify-center transition">
             Prosseguir <ArrowRight size={16} />
           </button>
         </div>
 
       </div>
 
+      {/* ASIDE: cards harmonized with consistent border/shadow/padding */}
       <aside className="w-full md:w-[320px] space-y-6 mt-6 md:mt-0">
-        <div className="bg-[#F9FAFB] border border-gray-200 rounded-2xl p-4">
+        <div className="bg-[#F9FAFB] border border-gray-200 rounded-2xl shadow-sm p-4">
           <h4 className="text-sm font-semibold text-gray-800 mb-2">Média de milhas</h4>
           <p className="text-xs text-gray-600 mb-3">Ao vender mais de 20.000 milhas, ative as Opções Avançadas para definir a média de milhas por emissão.</p>
           <div className="flex items-center justify-between">
@@ -509,7 +609,7 @@ function Step2(props: any) {
           </div>
         </div>
 
-        <div className="bg-[#F9FAFB] border border-gray-200 rounded-2xl p-5">
+        <div className="bg-[#F9FAFB] border border-gray-200 rounded-2xl shadow-sm p-4">
           <h4 className="text-sm font-semibold text-gray-800 mb-4">Ranking das ofertas</h4>
           {!miles || parseMilesNumber(miles) <= 0 ? (
             <p className="text-gray-500 text-sm">Aguardando milhas...</p>
@@ -600,7 +700,7 @@ function InputWithIcon({ icon, label, value, onChange, placeholder, type = "text
   return (
     <div className="relative">
       <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
-      <div className="absolute left-3 inset-y-0 flex items-center pointer-events-none text-gray-400">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
         {icon}
       </div>
       <input
